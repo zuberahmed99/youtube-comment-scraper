@@ -29,10 +29,15 @@ def parsedata(soup):
 
 def get_user_name(comment):
     #TODO
-    return
+    user_soup = comment.find("div", {"class": "comment-renderer-header"})
+    user_name = user_soup.find("a").text
+    return user_name
 
 def get_comment(comment):
-    return
+    comment_soup = comment.find("div", {"class": "comment-renderer-text-content"})
+    comment_text = comment_soup.text
+    return comment_text
 
 def get_replies(comment):
+    comment_replies_soup = comment.find("div", {"class": "comment-replies-renderer"})
     return
