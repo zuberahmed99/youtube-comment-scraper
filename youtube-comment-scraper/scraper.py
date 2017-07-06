@@ -7,6 +7,7 @@ import requests
 import time
 
 COMMENTS_FILE = "youtube_comments.csv"
+driver = webdriver.PhantomJS()
 def get_beautiful_soup_object(url):
     return BeautifulSoup(url)
 
@@ -48,10 +49,10 @@ def get_replies(comment):
     return
 
 def get_comments(link):
-    try:
-        driver = webdriver.PhantomJS()
-    except Exception as exp:
-        raise exp
+   # try:
+    #    driver = webdriver.PhantomJS()
+   # except Exception as exp:
+    #    raise exp
 
     driver.get(link)
     driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
@@ -61,7 +62,13 @@ def get_comments(link):
         raise Exception("Exiting!")
     html = driver.page_source
     soup = get_beautiful_soup_object(html)
-    parsedata(soup)
+    while(1):
+        parsedata(soup)
+        time.sleep(5)
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+
+
 
 
 get_comments("https://www.youtube.com/watch?v=39VcGo0Ufc4")
