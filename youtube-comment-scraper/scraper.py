@@ -1,4 +1,7 @@
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 from urllib import urlopen
 from bs4 import BeautifulSoup
 import pandas as pd
@@ -7,6 +10,7 @@ import requests
 import time
 
 COMMENTS_FILE = "youtube_comments.csv"
+SHOW_MORE_XPATH =  "//*[@id=\"comment-section-renderer\"]/button/span/span[2]"
 driver = webdriver.PhantomJS()
 def get_beautiful_soup_object(url):
     return BeautifulSoup(url)
@@ -22,15 +26,16 @@ def parsedata(soup):
         replies = get_replies(comment)
         comment_details = {"username": username, "comment": comment_str, "replies": replies}
         comment_df = pd.DataFrame(comment_details, index=[0])
+        if not os.path.isfile(COMMENTS_FILE):
+            comment_df.to_csv(COMMENTS_FILE, header=True, encoding='utf-8')
+        else:  # else it exists so append without writing the header
+            comment_df.to_csv(COMMENTS_FILE, mode='a', header=False, encoding='utf-8')
 
 
 
 
     # if file does not exist write header
-    if not os.path.isfile(COMMENTS_FILE):
-        comment_df.to_csv(COMMENTS_FILE, header=True, encoding='utf-8')
-    else:  # else it exists so append without writing the header
-        comment_df.to_csv(COMMENTS_FILE, mode='a', header=False, encoding='utf-8')
+
 
 
 def get_user_name(comment):
@@ -66,9 +71,16 @@ def get_comments(link):
         parsedata(soup)
         time.sleep(5)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(3)
+        element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, SHOW_MORE_XPATH)));
+
+        element.click();
+        #elem = driver.find_element_by_xpath(SHOW_MORE_XPATH)
+        #elem.click()
+        time.sleep(3)
 
 
 
 
 
-get_comments("https://www.youtube.com/watch?v=39VcGo0Ufc4")
+get_comments("https://www.youtube.com/watch?v=xSh2Ujarg1I")
