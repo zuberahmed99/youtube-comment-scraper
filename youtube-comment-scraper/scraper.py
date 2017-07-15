@@ -11,6 +11,8 @@ import time
 
 COMMENTS_FILE = "youtube_comments.csv"
 SHOW_MORE_XPATH =  "//*[@id=\"comment-section-renderer\"]/button/span/span[2]"
+
+
 driver = webdriver.PhantomJS()
 def get_beautiful_soup_object(url):
     return BeautifulSoup(url)
@@ -72,15 +74,15 @@ def get_comments(link):
         time.sleep(5)
         driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
-        element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, SHOW_MORE_XPATH)));
-
-        element.click();
-        #elem = driver.find_element_by_xpath(SHOW_MORE_XPATH)
-        #elem.click()
+        #element = WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.XPATH, SHOW_MORE_XPATH)));
+        #element = driver.find_element_by_link_text("Show More")
+        #element.click()
+        element = driver.find_element_by_xpath(SHOW_MORE_XPATH)
+        element.click()
         time.sleep(3)
 
 
 
 
 
-get_comments("https://www.youtube.com/watch?v=xSh2Ujarg1I")
+get_comments("https://www.youtube.com/watch?v=JGhoLcsr8GA")
