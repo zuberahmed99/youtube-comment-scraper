@@ -5,15 +5,18 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 COMMENTS_FILE = "youtube_comments.csv"
-SHOW_MORE_XPATH = "//*[@id=\"comment-section-renderer\"]/button/span/span[2]"
-
+SHOW_MORE_XPATH = "//*[@id=\"comment-section-renderer\"]/button"
+SHOW_MORE_CLASS_NAME = "comment-section-renderer-paginator"
 
 class YouTubeComments(object):
     def __init__(self):
         print "Initialized!"
-        self.driver = webdriver.PhantomJS()
+        self.driver = webdriver.Chrome()
 
     def get_beautiful_soup_object(self, url):
         return BeautifulSoup(url, "lxml")
@@ -59,10 +62,14 @@ class YouTubeComments(object):
         #    self.driver = webself.driver.PhantomJS()
         # except Exception as exp:
         #    raise exp
+        last_height = self.driver.execute_script("return document.body.scrollHeight")
+        print last_height
 
         self.driver.get(link)
         self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
         time.sleep(3)
+        last_height = self.driver.execute_script("return document.body.scrollHeight")
+        print last_height
         r = requests.get(link)
         if r.status_code != 200:
             raise Exception("Exiting!")
@@ -70,12 +77,15 @@ class YouTubeComments(object):
         soup = self.get_beautiful_soup_object(html)
         while (1):
             self.parsedata(soup)
-            time.sleep(5)
+            time.sleep(2)
             self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-            time.sleep(3)
+            time.sleep(2)
             # element = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, SHOW_MORE_XPATH)));
             # element = self.driver.find_element_by_link_text("Show More")
             # element.click()
-            element = self.driver.find_element_by_xpath(SHOW_MORE_XPATH)
+            last_height = self.driver.execute_script("return document.body.scrollHeight")
+            print last_height
+            element = WebDriverWait(self.driver, 20).until(EC.element_to_be_clickable((By.XPATH, SHOW_MORE_XPATH)))
+            #element = self.driver.find_element_by_xpath(SHOW_MORE_XPATH)
             element.click()
             time.sleep(3)
